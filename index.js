@@ -9,15 +9,15 @@ mongoose.connect('mongodb://Hoanglong:Hoanglong@ds251245.mlab.com:51245/android9
   useMongoClient: true
 });
 
-var hottie = new Hottie(
-  {
-    name: "bird1",
-    age: 2,
-    image: "https://files.allaboutbirds.net/wp-content/uploads/2015/06/prow-featured.jpg"
-  }
-);
-
-hottie.save();
+// var hottie = new Hottie(
+//   {
+//     name: "bird1",
+//     age: 2,
+//     image: "https://files.allaboutbirds.net/wp-content/uploads/2015/06/prow-featured.jpg"
+//   }
+// );
+//
+// hottie.save();
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -33,24 +33,39 @@ app.get('/', function(request, response) {
   response.render('pages/index');
 });
 
-// app.get('/api/gxtg',function(req,res){
-//   res.json(hotties);
-// });
-//
-// app.post('/api/gxtg',function(req,res){
-//   var body = req.body;
-//   var name = body.name;
-//   var age = body.age;
-//   var image = body.image;
-//
-//   hotties.push({
-//     name : name,
-//     age: age,
-//     image: image
-//   });
-//
-//   res.json({"succes" : 1,"message" : "Record added"});
-// });
+app.get('/api/gxtg',function(req,res){
+  Hottie.find(function(err,hotties){
+    if(err){
+      res.json({success: 0 , message:"Could not get data from MLab.com"})
+    }else{
+      res.json(hotties);
+    }
+  });
+});
+
+
+
+app.post('/api/gxtg',function(req,res){
+  var body = req.body;
+
+  var name = body.name;
+  var age = body.age;
+  var image = body.image;
+
+  var hottie = new Hottie({
+    name: name,
+    age: age,
+    image: image
+  });
+
+  hottie.save(function(err,addedHottie){
+    if(err){
+      res.json({success:0,message:'Could not add record' + err});
+    }else{
+      res.json(addedHottie);
+    }
+  });
+});
 
 
 
